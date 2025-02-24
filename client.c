@@ -48,13 +48,45 @@ void split_send(int pid, char *str)
         }
         str++;
     }
+
+    i = 0;
+    while (i++ < 8)
+    {
+        send_signal(pid, 0);
+        usleep(42);
+    }
+}
+
+int is_numeric(char *str)
+{
+    int i;
+
+    i = 0;
+    while (str[i])
+    {
+        if (!(str[i] >= '0' && str[i] <= '9'))
+            return 0;
+        i++;
+    }
+    return 1;
 }
 
 int main(int ac, char **av)
 {
+    int pid;
+
     if (ac == 3)
     {
-        split_send(ft_atoi(av[1]), av[2]);
+        pid = ft_atoi(av[1]);
+        if (!is_numeric(av[1]) || pid <= 0)
+        {
+            ft_printf("PID should be a positive number!\n");
+            return 1;
+        }
+        if (pid <= 0)
+            split_send(pid, av[2]);
     }
-    // return 0;
+    else
+        ft_printf("Too much or too few arguments.\n Enter arguments in following order: ./client <PID> <MESSAGE>");
+    return 0;
 }
