@@ -1,15 +1,9 @@
 #include "minitalk.h"
 
 // Send signal to server
-
-// int kill(pid_t pid, int sig);
-// pid > 0 -> send
-// I no pid match -> errno = ESRCH
-// If permission failure | uid mismatch -> errno = EPERM
-
 void send_signal(int pid, int bit)
 {
-    ft_printf("BIT %i\n", bit);
+    // ft_printf("BIT %i\n", bit);
     if (bit == 0)
     {
         if (kill(pid, SIGUSR1) == -1)
@@ -28,27 +22,37 @@ void send_signal(int pid, int bit)
     }
 }
 
+void split_to_bits(int pid, int ch, int bit_count)
+{
+    int temp;
+    bit_count--;
+    while (bit_count >= 0)
+    {
+        temp = (ch >> bit_count) & 1;
+        ft_printf("temp %d\n", temp);
+        send_signal(pid, temp);
+        bit_count--;
+        usleep(42);
+    }
+}
+
 void split_send(int pid, char *str)
 {
-    char ch;
-    int temp;
     int i;
+    int len;
 
+    // First send length of the message
+    len = ft_strlen(str);
+    split_to_bits(pid, len, 32);
+
+    // Send the message
     while (*str)
     {
-        i = 7;
-        while (i >= 0)
-        {
-            ch = *str;
-            temp = (ch >> i) & 1;
-            usleep(42);
-            // ft_printf("temp %d\n", temp);
-            send_signal(pid, temp);
-            i--;
-        }
+        split_to_bits(pid, *str, 8);
         str++;
     }
 
+    // Send the message termination
     i = 0;
     while (i++ < 8)
     {
@@ -83,7 +87,7 @@ int main(int ac, char **av)
             ft_printf("PID should be a positive number!\n");
             return 1;
         }
-        if (pid <= 0)
+        else
             split_send(pid, av[2]);
     }
     else

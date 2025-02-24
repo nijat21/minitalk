@@ -6,8 +6,8 @@ NAME2=server
 CC=cc
 CFLAGS= -Wall -Wextra -Werror -g
 
-SRCS:=client.c server.c
-OBJS:=$(SRCS:%.c = %.o) 
+SRCS := client.c server.c
+OBJS := $(SRCS:%.c=%.o) 
  
 LIBFT_MAKE=make -C Libft
 LIBFT_LIB=Libft/libft.a
@@ -24,7 +24,7 @@ $(LIBFT_LIB):
 	$(LIBFT_MAKE) all
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -0 $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean: 
 	rm -f $(OBJS)
