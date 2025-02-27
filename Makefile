@@ -1,24 +1,41 @@
 .PHONY: all clean fclean re
 
-NAME1=client
-NAME2=server
+CLIENT=client
+SERVER=server
+
+CLIENT_BONUS=client_bonus
+SERVER_BONUS=server_bonus
 
 CC=cc
-CFLAGS= -Wall -Wextra -Werror -g
+CFLAGS= -Wall -Wextra -Werror -g 
+# -fsanitize=address
 
-SRCS := client.c server.c
+SRCS := client.c server.c client_bonus.c server_bonus.c
 OBJS := $(SRCS:%.c=%.o) 
  
 LIBFT_MAKE=make -C Libft
 LIBFT_LIB=Libft/libft.a
 
-all: $(NAME2) $(NAME1)
 
-$(NAME2): $(LIBFT_LIB) server.o
-	$(CC) $(CFLAGS) server.o $(LIBFT_LIB) -o $(NAME2)
+all: $(SERVER) $(CLIENT)
 
-$(NAME1): $(LIBFT_LIB) client.o
-	$(CC) $(CFLAGS) client.o $(LIBFT_LIB) -o $(NAME1)
+$(SERVER): $(LIBFT_LIB) server.o
+	$(CC) $(CFLAGS) server.o $(LIBFT_LIB) -o $(SERVER)
+
+$(CLIENT): $(LIBFT_LIB) client.o
+	$(CC) $(CFLAGS) client.o $(LIBFT_LIB) -o $(CLIENT)
+
+
+
+bonus: $(SERVER_BONUS) $(CLIENT_BONUS)
+
+$(SERVER_BONUS): $(LIBFT_LIB) server_bonus.o
+	$(CC) $(CFLAGS) server_bonus.o $(LIBFT_LIB) -o $(SERVER_BONUS)
+
+$(CLIENT_BONUS): $(LIBFT_LIB) client_bonus.o
+	$(CC) $(CFLAGS) client_bonus.o $(LIBFT_LIB) -o $(CLIENT_BONUS)
+
+
 
 $(LIBFT_LIB):
 	$(LIBFT_MAKE) all
@@ -31,7 +48,7 @@ clean:
 	$(LIBFT_MAKE) clean
 
 fclean: clean
-	rm -f $(NAME1) $(NAME2)
+	rm -f $(CLIENT) $(SERVER) $(CLIENT_BONUS) $(SERVER_BONUS)
 	$(LIBFT_MAKE) fclean
 
 re: fclean all
