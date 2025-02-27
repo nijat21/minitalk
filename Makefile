@@ -17,7 +17,7 @@ LIBFT_MAKE=make -C Libft
 LIBFT_LIB=Libft/libft.a
 
 
-all: $(SERVER) $(CLIENT)
+all: $(SERVER) $(CLIENT) bonus
 
 $(SERVER): $(LIBFT_LIB) server.o
 	$(CC) $(CFLAGS) server.o $(LIBFT_LIB) -o $(SERVER)

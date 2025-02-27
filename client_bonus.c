@@ -4,16 +4,19 @@ volatile sig_atomic_t ack_received = 0;
 
 void send_mess(int pid, int ch, int bit_count)
 {
-    while (--bit_count >= 0)
+    ft_printf("Ack %d\n", ack_received);
+
+    while (--bit_count >= 0 && ack_received)
     {
+        ack_received = 0;
         if ((ch >> bit_count & 1) == 1)
             kill(pid, SIGUSR2);
         else
             kill(pid, SIGUSR1);
-        while (!ack_received)
-            pause();
-        // usleep(100);
+        usleep(500);
     }
+    while (!ack_received)
+        pause();
 }
 
 int is_numeric(char *str)
@@ -62,11 +65,11 @@ int main(int ac, char **av)
             return 1;
         }
         mes = av[2];
+        receive_ack();
         send_mess(pid, ft_strlen(av[2]), 32);
         while (mes[i])
             send_mess(pid, mes[i++], 8);
         send_mess(pid, '\0', 8);
-        receive_ack();
     }
     else
         ft_printf("All arguments should be given as: \n./client <PID> <MESSAGE>");
