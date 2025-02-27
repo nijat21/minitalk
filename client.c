@@ -2,12 +2,8 @@
 
 void send_mess(int pid, int ch, int bit_count)
 {
-    // int bit;
-
     while (--bit_count >= 0)
     {
-        // bit = (ch >> bit_count & 1);
-        // ft_printf("Sent %d\n", bit);
         if ((ch >> bit_count & 1) == 1)
             kill(pid, SIGUSR2);
         else
@@ -33,7 +29,6 @@ int main(int ac, char **av)
     int i = 0;
     char *mes;
 
-    // ft_printf("Pid check: %d\n", getpid());
     if (ac == 3)
     {
         pid = ft_atoi(av[1]);

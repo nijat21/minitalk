@@ -1,83 +1,74 @@
 #include "minitalk.h"
 
-// Send signal to server
-void split_to_bits(int pid, int ch, int bit_count)
+volatile sig_atomic_t ack_received = 0;
+
+void send_mess(int pid, int ch, int bit_count)
 {
-    int bit;
-    bit_count--;
-    while (bit_count >= 0)
+    while (--bit_count >= 0)
     {
-        bit = (ch >> bit_count) & 1;
-        ft_printf("bit %d\n", bit);
-        if (bit == 0)
-            kill(pid, SIGUSR1);
-        else
+        if ((ch >> bit_count & 1) == 1)
             kill(pid, SIGUSR2);
-        bit_count--;
-        usleep(200);
+        else
+            kill(pid, SIGUSR1);
+        while (!ack_received)
+            pause();
+        // usleep(100);
     }
 }
 
-// First send length of the message
-// Send the message
-// Send the null terminator
-void split_send(int pid, char *str)
+int is_numeric(char *str)
 {
-    int i;
-    int len;
-
-    len = ft_strlen(str);
-    split_to_bits(pid, len, 32);
     while (*str)
     {
-        split_to_bits(pid, *str, 8);
+        if (!(*str >= '0' && *str <= '9'))
+            return 0;
         str++;
     }
-    i = 0;
-    while (i++ < 8)
-    {
-        kill(pid, SIGUSR1);
-        usleep(200);
-    }
+    return 1;
 }
 
-// void sig_handle(int sig)
-// {
-//     int temp = 0;
+void sig_handle(int sig)
+{
+    if (sig == SIGUSR2)
+        ft_printf("Bit received 1\n");
+    else
+        ft_printf("Bit received 0\n");
+    ack_received = 1;
+}
 
-//     if (sig == SIGUSR2)
-//         temp = 1;
-//     ft_printf("Bit received %d\n", temp);
-// }
+void receive_ack(void)
+{
+    struct sigaction ack;
 
-// void receive_ack(void)
-// {
-//     struct sigaction ack;
-
-//     ack.sa_handler = sig_handle;
-//     sigemptyset(&ack.sa_mask);
-//     ack.sa_flags = 0;
-//     sigaction(SIGUSR1, &ack, NULL);
-//     sigaction(SIGUSR2, &ack, NULL);
-// }
+    ack.sa_handler = sig_handle;
+    sigemptyset(&ack.sa_mask);
+    ack.sa_flags = 0;
+    sigaction(SIGUSR1, &ack, NULL);
+    sigaction(SIGUSR2, &ack, NULL);
+}
 
 int main(int ac, char **av)
 {
     int pid;
+    int i = 0;
+    char *mes;
 
-    ft_printf("Pid check: %d\n", getpid());
     if (ac == 3)
     {
         pid = ft_atoi(av[1]);
-        if (!pid)
+        if (!pid || !is_numeric(av[1]))
         {
-            ft_printf("PID should be a positive number!\n");
+            ft_printf("PID should be an unsigned integer!\n");
             return 1;
         }
-        else
-            split_send(pid, av[2]);
+        mes = av[2];
+        send_mess(pid, ft_strlen(av[2]), 32);
+        while (mes[i])
+            send_mess(pid, mes[i++], 8);
+        send_mess(pid, '\0', 8);
+        receive_ack();
     }
     else
-        ft_printf("Too much or too few arguments.\n Enter arguments in following order: ./client <PID> <MESSAGE>");
+        ft_printf("All arguments should be given as: \n./client <PID> <MESSAGE>");
     return 0;
 }
