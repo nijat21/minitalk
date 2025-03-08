@@ -3,20 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nismayil <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: nismayil <nismayil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/04 15:16:51 by nismayil          #+#    #+#             */
-/*   Updated: 2025/03/04 15:16:53 by nismayil         ###   ########.fr       */
+/*   Created: 2025/03/08 17:20:16 by nismayil          #+#    #+#             */
+/*   Updated: 2025/03/08 18:01:55 by nismayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	receive_len(int sig, int *len_received, char **str)
+void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
 {
 	static int	i = 32;
 	static int	res = 0;
 
+	kill(info->si_pid, SIGUSR1);
 	--i;
 	if (sig == SIGUSR2)
 		res |= 1 << i;
@@ -31,16 +32,17 @@ void	receive_len(int sig, int *len_received, char **str)
 	return ;
 }
 
-void	handle_end(char **str, int *str_i, int *len_received)
+void	handle_end(char **str, int *str_i, int *len_received, siginfo_t *info)
 {
 	ft_printf("%s\n", (*str));
+	kill(info->si_pid, SIGUSR2);
 	free((*str));
 	*str = NULL;
 	*str_i = 0;
 	*len_received = 0;
 }
 
-void	sig_handler(int sig)
+void	sig_handler(int sig, siginfo_t *info, void *context)
 {
 	static unsigned char	ch = 0;
 	static int				i = 8;
@@ -48,8 +50,9 @@ void	sig_handler(int sig)
 	static char				*str = NULL;
 	static int				str_i = 0;
 
+	(void)context;
 	if (!len_received)
-		receive_len(sig, &len_received, &str);
+		receive_len(sig, &len_received, &str, info);
 	else
 	{
 		--i;
@@ -59,10 +62,11 @@ void	sig_handler(int sig)
 		{
 			str[str_i++] = ch;
 			if (ch == '\0')
-				handle_end(&str, &str_i, &len_received);
+				handle_end(&str, &str_i, &len_received, info);
 			ch = 0;
 			i = 8;
 		}
+		kill(info->si_pid, SIGUSR1);
 	}
 }
 
@@ -73,9 +77,9 @@ int	main(void)
 
 	pid = getpid();
 	ft_printf("PID: %d\n", pid);
-	action.sa_handler = sig_handler;
+	action.sa_sigaction = sig_handler;
 	sigemptyset(&action.sa_mask);
-	action.sa_flags = 0;
+	action.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &action, NULL);
 	sigaction(SIGUSR2, &action, NULL);
 	while (1)

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nismayil <nismayil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/08 17:19:58 by nismayil          #+#    #+#             */
-/*   Updated: 2025/03/08 18:50:41 by nismayil         ###   ########.fr       */
+/*   Created: 2025/03/08 17:20:06 by nismayil          #+#    #+#             */
+/*   Updated: 2025/03/08 18:44:45 by nismayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	main(int ac, char **av)
 	if (ac != 3)
 	{
 		ft_printf("All arguments should be given as: \n");
-		ft_printf("./ client <PID> <MESSAGE> ");
+		ft_printf("./ client <PID> <MESSAGE>");
 		return (0);
 	}
 	pid = ft_atoi(av[1]);

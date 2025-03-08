@@ -7,8 +7,7 @@ CLIENT_BONUS=client_bonus
 SERVER_BONUS=server_bonus
 
 CC=cc
-CFLAGS= -Wall -Wextra -Werror -g 
-# -fsanitize=address
+CFLAGS= -Wall -Wextra -Werror -g
 
 SRCS := client.c server.c client_bonus.c server_bonus.c
 OBJS := $(SRCS:%.c=%.o) 

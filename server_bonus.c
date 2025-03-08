@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server_bonus.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nismayil <nismayil@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/08 17:20:24 by nismayil          #+#    #+#             */
+/*   Updated: 2025/03/08 17:51:02 by nismayil         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minitalk.h"
 
 void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
@@ -5,7 +17,7 @@ void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
 	static int	i = 32;
 	static int	res = 0;
 
-	kill(info->si_pid, sig);
+	kill(info->si_pid, SIGUSR1);
 	--i;
 	if (sig == SIGUSR2)
 		res |= 1 << i;
@@ -20,9 +32,10 @@ void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
 	return ;
 }
 
-void	handle_end(char **str, int *str_i, int *len_received)
+void	handle_end(char **str, int *str_i, int *len_received, siginfo_t *info)
 {
 	ft_printf("%s\n", (*str));
+	kill(info->si_pid, SIGUSR2);
 	free((*str));
 	*str = NULL;
 	*str_i = 0;
@@ -42,7 +55,6 @@ void	sig_handler(int sig, siginfo_t *info, void *context)
 		receive_len(sig, &len_received, &str, info);
 	else
 	{
-		kill(info->si_pid, sig);
 		--i;
 		if (sig == SIGUSR2)
 			ch |= 1 << i;
@@ -50,10 +62,11 @@ void	sig_handler(int sig, siginfo_t *info, void *context)
 		{
 			str[str_i++] = ch;
 			if (ch == '\0')
-				handle_end(&str, &str_i, &len_received);
+				handle_end(&str, &str_i, &len_received, info);
 			ch = 0;
 			i = 8;
 		}
+		kill(info->si_pid, SIGUSR1);
 	}
 }
 
