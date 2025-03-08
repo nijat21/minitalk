@@ -6,7 +6,7 @@
 /*   By: nismayil <nismayil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 17:20:06 by nismayil          #+#    #+#             */
-/*   Updated: 2025/03/08 20:04:23 by nismayil         ###   ########.fr       */
+/*   Updated: 2025/03/08 21:30:55 by nismayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void send_mess(int pid, int ch, int bit_count)
 			kill(pid, SIGUSR2);
 		else
 			kill(pid, SIGUSR1);
-		sleep(1);
+		usleep(100000);
 	}
 }
 
@@ -75,6 +75,8 @@ int main(int ac, char **av)
 	}
 	mes = av[2];
 	receive_ack();
+	if (kill(pid, 0) < 0)
+		return (1);
 	send_mess(pid, ft_strlen(av[2]), 32);
 	while (mes[i])
 		send_mess(pid, mes[i++], 8);
