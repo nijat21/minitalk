@@ -6,16 +6,16 @@
 /*   By: nismayil <nismayil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 17:20:24 by nismayil          #+#    #+#             */
-/*   Updated: 2025/03/08 17:51:02 by nismayil         ###   ########.fr       */
+/*   Updated: 2025/03/08 19:58:32 by nismayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
+void receive_len(int sig, int *len_received, char **str, siginfo_t *info)
 {
-	static int	i = 32;
-	static int	res = 0;
+	static int i = 32;
+	static int res = 0;
 
 	kill(info->si_pid, SIGUSR1);
 	--i;
@@ -29,10 +29,10 @@ void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
 		i = 32;
 		res = 0;
 	}
-	return ;
+	return;
 }
 
-void	handle_end(char **str, int *str_i, int *len_received, siginfo_t *info)
+void handle_end(char **str, int *str_i, int *len_received, siginfo_t *info)
 {
 	ft_printf("%s\n", (*str));
 	kill(info->si_pid, SIGUSR2);
@@ -42,13 +42,13 @@ void	handle_end(char **str, int *str_i, int *len_received, siginfo_t *info)
 	*len_received = 0;
 }
 
-void	sig_handler(int sig, siginfo_t *info, void *context)
+void sig_handler(int sig, siginfo_t *info, void *context)
 {
-	static unsigned char	ch = 0;
-	static int				i = 8;
-	static int				len_received = 0;
-	static char				*str = NULL;
-	static int				str_i = 0;
+	static unsigned char ch = 0;
+	static int i = 8;
+	static int len_received = 0;
+	static char *str = NULL;
+	static int str_i = 0;
 
 	(void)context;
 	if (!len_received)
@@ -70,10 +70,10 @@ void	sig_handler(int sig, siginfo_t *info, void *context)
 	}
 }
 
-int	main(void)
+int main(void)
 {
-	int					pid;
-	struct sigaction	action;
+	int pid;
+	struct sigaction action;
 
 	pid = getpid();
 	ft_printf("PID: %d\n", pid);
@@ -83,6 +83,6 @@ int	main(void)
 	sigaction(SIGUSR1, &action, NULL);
 	sigaction(SIGUSR2, &action, NULL);
 	while (1)
-		pause();
+		usleep(100);
 	return (0);
 }
