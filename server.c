@@ -6,7 +6,7 @@
 /*   By: nismayil <nismayil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 17:20:16 by nismayil          #+#    #+#             */
-/*   Updated: 2025/03/08 18:01:55 by nismayil         ###   ########.fr       */
+/*   Updated: 2025/03/09 13:44:33 by nismayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
 	static int	i = 32;
 	static int	res = 0;
 
-	kill(info->si_pid, SIGUSR1);
 	--i;
 	if (sig == SIGUSR2)
 		res |= 1 << i;
@@ -29,6 +28,7 @@ void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
 		i = 32;
 		res = 0;
 	}
+	kill(info->si_pid, SIGUSR1);
 	return ;
 }
 
@@ -44,9 +44,9 @@ void	handle_end(char **str, int *str_i, int *len_received, siginfo_t *info)
 
 void	sig_handler(int sig, siginfo_t *info, void *context)
 {
-	static unsigned char	ch = 0;
+	static unsigned char	ch;
 	static int				i = 8;
-	static int				len_received = 0;
+	static int				len_received;
 	static char				*str = NULL;
 	static int				str_i = 0;
 
@@ -62,7 +62,8 @@ void	sig_handler(int sig, siginfo_t *info, void *context)
 		{
 			str[str_i++] = ch;
 			if (ch == '\0')
-				handle_end(&str, &str_i, &len_received, info);
+				return (handle_end(&str, &str_i, &len_received, info),
+					len_received = 0, ch = 0, i = 8, (void)i);
 			ch = 0;
 			i = 8;
 		}

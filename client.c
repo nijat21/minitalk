@@ -6,7 +6,7 @@
 /*   By: nismayil <nismayil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 17:19:58 by nismayil          #+#    #+#             */
-/*   Updated: 2025/03/08 18:50:41 by nismayil         ###   ########.fr       */
+/*   Updated: 2025/03/09 13:44:13 by nismayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	send_mess(int pid, int ch, int bit_count)
 			kill(pid, SIGUSR2);
 		else
 			kill(pid, SIGUSR1);
-		sleep(1);
+		usleep(100000);
 	}
 }
 
@@ -64,7 +64,7 @@ int	main(int ac, char **av)
 	if (ac != 3)
 	{
 		ft_printf("All arguments should be given as: \n");
-		ft_printf("./ client <PID> <MESSAGE> ");
+		ft_printf("./ client <PID> <MESSAGE>");
 		return (0);
 	}
 	pid = ft_atoi(av[1]);
@@ -75,6 +75,8 @@ int	main(int ac, char **av)
 	}
 	mes = av[2];
 	receive_ack();
+	if (kill(pid, 0) < 0)
+		return (1);
 	send_mess(pid, ft_strlen(av[2]), 32);
 	while (mes[i])
 		send_mess(pid, mes[i++], 8);
