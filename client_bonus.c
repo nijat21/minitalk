@@ -12,7 +12,7 @@
 
 #include "minitalk.h"
 
-void send_mess(int pid, int ch, int bit_count)
+void	send_mess(int pid, int ch, int bit_count)
 {
 	while (--bit_count >= 0)
 	{
@@ -24,7 +24,7 @@ void send_mess(int pid, int ch, int bit_count)
 	}
 }
 
-int is_numeric(char *str)
+int	is_numeric(char *str)
 {
 	while (*str)
 	{
@@ -35,17 +35,17 @@ int is_numeric(char *str)
 	return (1);
 }
 
-void sig_handle(int sig)
+void	sig_handle(int sig)
 {
 	if (sig == SIGUSR2)
 		ft_printf("Message sent\n");
 	else
-		return;
+		return ;
 }
 
-void receive_ack(void)
+void	receive_ack(void)
 {
-	struct sigaction ack;
+	struct sigaction	ack;
 
 	ack.sa_handler = sig_handle;
 	sigemptyset(&ack.sa_mask);
@@ -54,11 +54,11 @@ void receive_ack(void)
 	sigaction(SIGUSR2, &ack, NULL);
 }
 
-int main(int ac, char **av)
+int	main(int ac, char **av)
 {
-	int pid;
-	int i;
-	char *mes;
+	int		pid;
+	int		i;
+	char	*mes;
 
 	i = 0;
 	if (ac != 3)
