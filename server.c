@@ -6,16 +6,16 @@
 /*   By: nismayil <nismayil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 17:20:16 by nismayil          #+#    #+#             */
-/*   Updated: 2025/03/09 13:44:33 by nismayil         ###   ########.fr       */
+/*   Updated: 2025/03/09 13:51:21 by nismayil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
+void receive_len(int sig, int *len_received, char **str, siginfo_t *info)
 {
-	static int	i = 32;
-	static int	res = 0;
+	static int i = 32;
+	static int res = 0;
 
 	--i;
 	if (sig == SIGUSR2)
@@ -29,10 +29,10 @@ void	receive_len(int sig, int *len_received, char **str, siginfo_t *info)
 		res = 0;
 	}
 	kill(info->si_pid, SIGUSR1);
-	return ;
+	return;
 }
 
-void	handle_end(char **str, int *str_i, int *len_received, siginfo_t *info)
+void handle_end(char **str, int *str_i, int *len_received, siginfo_t *info)
 {
 	ft_printf("%s\n", (*str));
 	kill(info->si_pid, SIGUSR2);
@@ -42,13 +42,13 @@ void	handle_end(char **str, int *str_i, int *len_received, siginfo_t *info)
 	*len_received = 0;
 }
 
-void	sig_handler(int sig, siginfo_t *info, void *context)
+void sig_handler(int sig, siginfo_t *info, void *context)
 {
-	static unsigned char	ch;
-	static int				i = 8;
-	static int				len_received;
-	static char				*str = NULL;
-	static int				str_i = 0;
+	static char ch;
+	static int i = 8;
+	static int len_received;
+	static char *str = NULL;
+	static int str_i = 0;
 
 	(void)context;
 	if (!len_received)
@@ -63,7 +63,7 @@ void	sig_handler(int sig, siginfo_t *info, void *context)
 			str[str_i++] = ch;
 			if (ch == '\0')
 				return (handle_end(&str, &str_i, &len_received, info),
-					len_received = 0, ch = 0, i = 8, (void)i);
+						len_received = 0, ch = 0, i = 8, (void)i);
 			ch = 0;
 			i = 8;
 		}
@@ -71,10 +71,10 @@ void	sig_handler(int sig, siginfo_t *info, void *context)
 	}
 }
 
-int	main(void)
+int main(void)
 {
-	int					pid;
-	struct sigaction	action;
+	int pid;
+	struct sigaction action;
 
 	pid = getpid();
 	ft_printf("PID: %d\n", pid);
