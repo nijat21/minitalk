@@ -2,6 +2,10 @@
 
 Minitalk is a simple client-server communication program using UNIX signals (`SIGUSR1` and `SIGUSR2`). The client sends a string message to the server, which reconstructs and prints it.
 
+
+https://github.com/user-attachments/assets/7a6a6e79-3d4a-4d4f-9cf9-6a27b8d14acb
+
+
 ## Features
 
 - Sends messages from client to server using signals
